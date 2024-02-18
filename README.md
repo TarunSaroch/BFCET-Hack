@@ -1,5 +1,5 @@
 # Deadsec
-IC Hack 2.0 Healthcare Project
+BFCET Hack 1.0 Blockchain Project
 
 1. Machine Learning Model
 
