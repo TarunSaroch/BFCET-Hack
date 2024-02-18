@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7-rc.0/web3.min.js"></script>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="2.css">
+
+</head>
+
+<body>
+    <section class="text-gray-600 body-font">
+        <div class="container px-5 py-24 mx-auto flex flex-wrap">
+            <h2 class="sm:text-3xl text-2xl text-gray-900 font-medium title-font mb-2 md:w-2/5">Blockchain Patient mangement system</h2>
+            <div class="md:w-3/5 md:pl-6">
+                <div class="flex md:mt-4 mt-6">
+                    <p id="accountArea">Connection Status: NOT CONNECTED to Metamask </p>
+                </div>
+                <div class="flex md:mt-4 mt-6">
+                    <button class="inline-flex text-white bg-indigo-500 border-0 py-1 px-4 focus:outline-none hover:bg-indigo-600 rounded" onclick="connectMetamask()">Connect</button>
+
+                </div>
+                <div class="flex md:mt-4 mt-6">
+                    <p id="contractArea">Connection Status: NOT CONNECTED to Smart Contract</p>
+                </div>
+                <div class="flex md:mt-4 mt-6">
+                    <button class="inline-flex text-white bg-indigo-500 border-0 py-1 px-4 focus:outline-none hover:bg-indigo-600 rounded" onclick="connectContract()">Contract</button>
+                </div>
+                <br>
+                
+                <div class="flex md:mt-4 mt-6">
+                </div>        
+
+                
+            </div>
+            
+        </div>
+    </section>
+
+    <div class="sides">
+        <div class="lefthandside">
+            Patient View
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="Name" type="text" id="Name" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="Adhaar Number" type="text" id="adhaarNo" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <select id="gender" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;" required>
+                    <option value="">Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>\
+                    <option value="other">other</option>
+                </select>
+
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="Age" type="text" id="age" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="Email Address" type="text" id="email" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="Contact Number" type="text" id="phoneNo" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <select id="panNo" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;" required>
+                    <option value="">Blood Group</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="other">other</option>
+                </select>
+
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="Marital Status" type="text" id="maritalStatus" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="allergies" type="text" id="currentAddr" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+            <div class="flex md:mt-4 mt-6">
+                <input placeholder="Past meidcal history / Disease" type="text" id="residentialAddr" style="border: 1px solid #000000; border-radius: 5px; width: 100%; height: 45px;">
+            </div>
+
+            <div class="flex md:mt-4 mt-6">
+                <button class="inline-flex text-white bg-indigo-500 border-0 py-1 px-4 focus:outline-none hover:bg-indigo-600 rounded" onclick="changeWord()">Send Data</button>
+            </div>
+        </div>    
+
+        <div class="righthandside">
+            Doctors view
+
+            <br><br>
+            <p id="dataArea">Data Status: NO Data from Smart Contract </p>
+            <div class="flex md:mt-4 mt-6">
+                <button class="inline-flex text-white bg-indigo-500 border-0 py-1 px-4 focus:outline-none hover:bg-indigo-600 rounded" onclick="readContract()">Get Data</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let account;
+        const connectMetamask = async() => {
+            if (window.ethereum !== "undefined") {
+                const accounts = await ethereum.request({
+                    method: "eth_requestAccounts"
+                });
+                account = accounts[0];
+                document.getElementById("accountArea").innerHTML = `Account is: ${account}`;
+            }
+
+        }
+
+        const connectContract = async() => {
+                const ABI = [{
+                    "inputs": [{
+                        "internalType": "string",
+                        "name": "fullName",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "adhaarNo",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "gender",
+                        "type": "string"
+                    }, {
+                        "internalType": "uint256",
+                        "name": "age",
+                        "type": "uint256"
+                    }, {
+                        "internalType": "string",
+                        "name": "email",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "phoneNo",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "panNo",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "maritalStatus",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "currentAddr",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "residentialAddr",
+                        "type": "string"
+                    }],
+                    "name": "storeUserData",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }, {
+                    "inputs": [],
+                    "name": "getUserData",
+                    "outputs": [{
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }],
+                    "stateMutability": "view",
+                    "type": "function"
+                }, {
+                    "inputs": [{
+                        "internalType": "address",
+                        "name": "userAddress",
+                        "type": "address"
+                    }],
+                    "name": "getUserDataByAddress",
+                    "outputs": [{
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }, {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }],
+                    "stateMutability": "view",
+                    "type": "function"
+                }];
+                const Address = "0xBF435E18B21Aff9799B1f84624fc35Eb747f2100";
+                window.web3 = await new Web3(window.ethereum);
+                window.contract = await new window.web3.eth.Contract(ABI, Address);
+                document.getElementById("contractArea").innerHTML = "connected to smart contract";
+            }
+            //Read data from Contract
+        const readContract = async() => {
+            const userAddress = "USER_ADDRESS";
+            let acc = account;
+            const userData = await contract.methods.getUserDataByAddress(acc).call();
+            const fullName = userData[0];
+            const adhaarNo = userData[1];
+            const gender = userData[2];
+            const age = userData[3];
+            const email = userData[4];
+            const phoneNo = userData[5];
+            const panNo = userData[6];
+            const maritalStatus = userData[7];
+            const currentAddr = userData[8];
+            const residentialAddr = userData[9];
+            const data = `Full Name: ${fullName}<br>
+                         Adhaar Number: ${adhaarNo}<br>
+                         Gender: ${gender}<br>
+                         Age: ${age}<br>
+                         Email: ${email}<br>
+                         Phone Number: ${phoneNo}<br>
+                         Blood Group: ${panNo}<br>
+                         Marital Status: ${maritalStatus}<br>
+                         Allergies: ${currentAddr}<br>
+                         Past Medical History / Disease: ${residentialAddr}`;
+            document.getElementById("dataArea").innerHTML = data;
+        }
+        const changeWord = async() => {
+            const myEntry1 = document.getElementById("Name").value;
+            const myEntry2 = document.getElementById("adhaarNo").value;
+            const myEntry3 = document.getElementById("gender").value;
+            const myEntry4 = document.getElementById("age").value;
+            const myEntry5 = document.getElementById("email").value;
+            const myEntry6 = document.getElementById("phoneNo").value;
+            const myEntry7 = document.getElementById("panNo").value;
+            const myEntry8 = document.getElementById("maritalStatus").value;
+            const myEntry9 = document.getElementById("currentAddr").value;
+            const myEntry10 = document.getElementById("residentialAddr").value;
+            await window.contract.methods.storeUserData(myEntry1, myEntry2, myEntry3, myEntry4, myEntry5, myEntry6, myEntry7, myEntry8, myEntry9, myEntry10).send({
+                from: account
+            });
+        }
+    </script>
+</body>
+
+</html>
