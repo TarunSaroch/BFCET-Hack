@@ -1,4 +1,4 @@
-# Krantiveer
+# Deadsec
 IC Hack 2.0 Healthcare Project
 
 1. Machine Learning Model
